@@ -4,3 +4,4 @@ connection.stock.properties
 .project
 .settings/
 target/
+bin/

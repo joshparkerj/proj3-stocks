@@ -1,6 +1,5 @@
 package com.revature.Project3Stocks;
 
-import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -15,8 +14,8 @@ public class DomainStock {
 	private String tickerSymbol;
 	private String companyName;
 	private String organizationName;
-	private BigDecimal amountSpent;
-	private BigDecimal shares;
+	private Double amountSpent;
+	private Double shares;
 
 	@Override
 	public String toString() {
@@ -35,48 +34,6 @@ public class DomainStock {
 		result = prime * result + ((shares == null) ? 0 : shares.hashCode());
 		result = prime * result + ((tickerSymbol == null) ? 0 : tickerSymbol.hashCode());
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DomainStock other = (DomainStock) obj;
-		if (amountSpent == null) {
-			if (other.amountSpent != null)
-				return false;
-		} else if (!amountSpent.equals(other.amountSpent))
-			return false;
-		if (companyName == null) {
-			if (other.companyName != null)
-				return false;
-		} else if (!companyName.equals(other.companyName))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (organizationName == null) {
-			if (other.organizationName != null)
-				return false;
-		} else if (!organizationName.equals(other.organizationName))
-			return false;
-		if (shares == null) {
-			if (other.shares != null)
-				return false;
-		} else if (!shares.equals(other.shares))
-			return false;
-		if (tickerSymbol == null) {
-			if (other.tickerSymbol != null)
-				return false;
-		} else if (!tickerSymbol.equals(other.tickerSymbol))
-			return false;
-		return true;
 	}
 
 	public String getTickerSymbol() {
@@ -103,19 +60,19 @@ public class DomainStock {
 		this.organizationName = organizationName;
 	}
 
-	public BigDecimal getAmountSpent() {
+	public Double getAmountSpent() {
 		return amountSpent;
 	}
 
-	public void setAmountSpent(BigDecimal amountSpent) {
+	public void setAmountSpent(Double amountSpent) {
 		this.amountSpent = amountSpent;
 	}
 
-	public BigDecimal getShares() {
+	public Double getShares() {
 		return shares;
 	}
 
-	public void setShares(BigDecimal shares) {
+	public void setShares(Double shares) {
 		this.shares = shares;
 	}
 
@@ -127,8 +84,8 @@ public class DomainStock {
 		this.id = id;
 	}
 
-	public DomainStock(String tickerSymbol, String companyName, String organizationName, BigDecimal amountSpent,
-			BigDecimal shares, String id) {
+	public DomainStock(String tickerSymbol, String companyName, String organizationName, Double amountSpent,
+			Double shares, String id) {
 		super();
 		this.tickerSymbol = tickerSymbol;
 		this.companyName = companyName;

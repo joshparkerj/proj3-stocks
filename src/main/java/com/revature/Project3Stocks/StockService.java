@@ -18,7 +18,7 @@ public class StockService {
 
 	@Transactional
 	public void create(DomainStock bullstock) {
-		bullstock.setId(bullstock.getOrganizationName() + bullstock.getTickerSymbol());
+		bullstock.setId(bullstock.getOrganizationName(), bullstock.getTickerSymbol());
 		stockRepository.save(bullstock);
 
 	}
@@ -38,7 +38,7 @@ public class StockService {
 	public boolean overwriteStock(String organization, String tickersymbol, DomainStock bullstock) {
 		Optional<DomainStock> ods = stockRepository.findById(organization + tickersymbol);
 		if (ods.isPresent()) {
-			bullstock.setId(bullstock.getOrganizationName() + bullstock.getTickerSymbol());
+			bullstock.setId(bullstock.getOrganizationName(), bullstock.getTickerSymbol());
 			stockRepository.save(bullstock);
 			return true;
 		}

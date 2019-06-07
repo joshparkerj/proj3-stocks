@@ -32,7 +32,7 @@ public class StockApplication extends SpringBootServletInitializer {
 	@PostMapping
 	public void create(@RequestBody DomainStock bullstock, HttpServletResponse response) {
 		for (DomainStock ds : stockService.getAllStocks()) {
-			if (ds.getId().equals(bullstock.getOrganizationName() + bullstock.getTickerSymbol())) {
+			if (ds.getId().equals(bullstock.getOrganizationName(), bullstock.getTickerSymbol())) {
 				ds.setAmountSpent(bullstock.getAmountSpent() + ds.getAmountSpent());
 				ds.setShares(ds.getShares() + bullstock.getShares());
 				stockService.overwriteStock(ds.getOrganizationName(), ds.getTickerSymbol(), ds);
@@ -76,7 +76,7 @@ public class StockApplication extends SpringBootServletInitializer {
 			@PathVariable("tickersymbol") String tickersymbol, @RequestBody DomainStock bullstock,
 			HttpServletResponse response) {
 		for (DomainStock ds : stockService.getAllStocks()) {
-			if (ds.getId().equals(bullstock.getOrganizationName() + bullstock.getTickerSymbol())) {
+			if (ds.getId().equals(bullstock.getOrganizationName(), bullstock.getTickerSymbol())) {
 				ds.setAmountSpent(bullstock.getAmountSpent() + ds.getAmountSpent());
 				ds.setShares(ds.getShares() + bullstock.getShares());
 				stockService.overwriteStock(ds.getOrganizationName(), ds.getTickerSymbol(), ds);

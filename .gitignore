@@ -1,0 +1,6 @@
+application.stock.yml 
+connection.stock.properties
+.classpath
+.project
+.settings/
+target/

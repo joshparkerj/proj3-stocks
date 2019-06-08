@@ -1,9 +1,7 @@
 package com.revature.Project3Stocks;
 
 import java.io.Serializable;
-import javax.persistence.Embeddable;
 
-@Embeddable
 public class StockKey implements Serializable {
 
 	private static final long serialVersionUID = 3940689878047005037L;
@@ -43,6 +41,26 @@ public class StockKey implements Serializable {
 
 	public boolean equals(String on2, String ts2) {
 		return (organizationName.equals(on2) && tickerSymbol.equals(ts2));
+	}
+
+	@Override
+	public boolean equals(Object possibleStockKey) {
+		if (possibleStockKey.getClass().equals(StockKey.class)) {
+			StockKey sk = (StockKey) possibleStockKey;
+			return (organizationName.equals(sk.getOrganizationName())
+					&& tickerSymbol.contentEquals(sk.getTickerSymbol()));
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = tickerSymbol.hashCode();
+		return 31 * result + organizationName.hashCode();
+	}
+
+	public static StockKey from(String organization, String tickersymbol2) {
+		return new StockKey(organization, tickersymbol2);
 	}
 
 }

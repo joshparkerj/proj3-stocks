@@ -20,29 +20,34 @@ public class StockService {
 	public void create(DomainStock bullstock) {
 		bullstock.setId(bullstock.getOrganizationName(), bullstock.getTickerSymbol());
 		stockRepository.save(bullstock);
-
 	}
 
 	@Transactional
 	public Optional<DomainStock> getByTickerSymbol(String organization, String tickersymbol) {
-		return stockRepository.findById(organization + tickersymbol);
+		return stockRepository.findById(new StockKey(organization, tickersymbol));
 	}
 
 	@Transactional
 	public void deleteStock(String organization, String tickersymbol) {
-		stockRepository.deleteById(organization + tickersymbol);
-
+		stockRepository.deleteById(new StockKey(organization, tickersymbol));
 	}
 
 	@Transactional
-	public boolean overwriteStock(String organization, String tickersymbol, DomainStock bullstock) {
-		Optional<DomainStock> ods = stockRepository.findById(organization + tickersymbol);
-		if (ods.isPresent()) {
-			bullstock.setId(bullstock.getOrganizationName(), bullstock.getTickerSymbol());
-			stockRepository.save(bullstock);
-			return true;
+	public void overwriteStock(DomainStock foundStock, DomainStock updatedStock) {
+		if (foundStock.equals(updatedStock)) {
+			System.out.println("line 38");
+			foundStock.overwrite(updatedStock);
+			stockRepository.save(foundStock);
+			return;
 		}
-		return false;
+		for (DomainStock ds : getAllStocks()) {
+			if (ds.equals(updatedStock)) {
+				ds.combine(updatedStock);
+				stockRepository.save(ds);
+				stockRepository.delete(foundStock);
+				return;
+			}
+		}
 	}
 
 	@Transactional

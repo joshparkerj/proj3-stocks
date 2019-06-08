@@ -1,7 +1,9 @@
 package com.revature.Project3Stocks;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,11 +33,14 @@ public class StockApplication extends SpringBootServletInitializer {
 
 	@PostMapping
 	public void create(@RequestBody DomainStock bullstock, HttpServletResponse response) {
+		if (bullstock == null || bullstock.getTickerSymbol() == null || bullstock.getOrganizationName() == null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 		for (DomainStock ds : stockService.getAllStocks()) {
-			if (ds.getId().equals(bullstock.getOrganizationName(), bullstock.getTickerSymbol())) {
-				ds.setAmountSpent(bullstock.getAmountSpent() + ds.getAmountSpent());
-				ds.setShares(ds.getShares() + bullstock.getShares());
-				stockService.overwriteStock(ds.getOrganizationName(), ds.getTickerSymbol(), ds);
+			if (ds.equals(bullstock)) {
+				bullstock.combine(ds);
+				stockService.overwriteStock(ds, bullstock);
 				response.setStatus(HttpServletResponse.SC_ACCEPTED);
 				return;
 			}
@@ -45,20 +50,36 @@ public class StockApplication extends SpringBootServletInitializer {
 	}
 
 	@GetMapping("/{organization}")
-	public List<DomainStock> getAll(@PathVariable("organization") String organization) {
-		List<DomainStock> filteredList = new LinkedList<DomainStock>();
+	public List<Map<String, Object>> getAll(@PathVariable("organization") String organization) {
+		List<Map<String, Object>> filteredList = new LinkedList<Map<String, Object>>();
 		for (DomainStock ds : stockService.getAllStocks()) {
-			if (ds.getOrganizationName().equals(organization))
-				filteredList.add(ds);
+			if (ds.getOrganizationName().equals(organization)) {
+				Map<String, Object> nhm = new HashMap<String, Object>();
+				nhm.put("organizationName", ds.getOrganizationName());
+				nhm.put("tickerSymbol", ds.getTickerSymbol());
+				nhm.put("companyName", ds.getCompanyName());
+				nhm.put("amountSpent", ds.getAmountSpent());
+				nhm.put("shares", ds.getShares());
+				filteredList.add(nhm);
+			}
 		}
 		return filteredList;
 	}
 
 	@GetMapping("/{organization}/{tickersymbol}")
-	public Optional<DomainStock> getByTickerSymbol(@PathVariable("organization") String organization,
+	public Map<String, Object> getByTickerSymbol(@PathVariable("organization") String organization,
 			@PathVariable("tickersymbol") String tickersymbol) {
-		// System.out.println(organization+tickersymbol);
-		return stockService.getByTickerSymbol(organization, tickersymbol);
+		Map<String, Object> mso = new HashMap<String, Object>();
+		Optional<DomainStock> ods = stockService.getByTickerSymbol(organization, tickersymbol);
+		if (ods.isPresent()) {
+			DomainStock ds = ods.get();
+			mso.put("organizationName", ds.getOrganizationName());
+			mso.put("tickerSymbol", ds.getTickerSymbol());
+			mso.put("companyName", ds.getCompanyName());
+			mso.put("amountSpent", ds.getAmountSpent());
+			mso.put("shares", ds.getShares());
+		}
+		return mso;
 	}
 
 	@DeleteMapping("/{organization}/{tickersymbol}")
@@ -73,19 +94,15 @@ public class StockApplication extends SpringBootServletInitializer {
 
 	@PutMapping("/{organization}/{tickersymbol}")
 	public void overwrite(@PathVariable("organization") String organization,
-			@PathVariable("tickersymbol") String tickersymbol, @RequestBody DomainStock bullstock,
+			@PathVariable("tickersymbol") String tickersymbol, @RequestBody DomainStock updatedRecord,
 			HttpServletResponse response) {
-		for (DomainStock ds : stockService.getAllStocks()) {
-			if (ds.getId().equals(bullstock.getOrganizationName(), bullstock.getTickerSymbol())) {
-				ds.setAmountSpent(bullstock.getAmountSpent() + ds.getAmountSpent());
-				ds.setShares(ds.getShares() + bullstock.getShares());
-				stockService.overwriteStock(ds.getOrganizationName(), ds.getTickerSymbol(), ds);
-				stockService.deleteStock(organization, tickersymbol);
-				return;
-			}
-		}
-		if (!stockService.overwriteStock(organization, tickersymbol, bullstock))
+		Optional<DomainStock> requestedRecord = stockService.getByTickerSymbol(organization, tickersymbol);
+		if (!requestedRecord.isPresent()) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		DomainStock foundRecord = requestedRecord.get();
+		stockService.overwriteStock(foundRecord, updatedRecord);
 	}
 
 	@Override
